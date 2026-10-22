@@ -66,30 +66,49 @@ def learn(state, action, next_state, reward, q_table):
     alpha = 0.1
     gamma = 0.9
 
-    # TODO: Implement update Q values using the Bellman update equation
+    ## get current Q value
+    currentQ = q_table[state, action]    
+
+    ## find maximum Q value for next state
+    maxQ = np.max(q_table[next_state])
+
+    ## bellman equation
+    newQ = currentQ + alpha * (reward + gamma * maxQ - currentQ)
+
+    ## update Q table
+    q_table[state, action] = newQ
 
     return q_table
 
 
 def choose_action(state, q_table, epsilon, action_space):
-    action = 0
 
-    # TODO: Implement choose action.
-    
-    return action
+    ## generates a randome number between 0 and 1
+    rand_val = random.random()
+
+    ## if random number is greater than epsilon, pick the best known action
+    if rand_val > epsilon:
+        ## find max Q value
+        maxQ = np.max(q_table[state])
+        ## find actions that have this max Q value (randomizes ties)
+        bestAction = np.where(q_table[state] == maxQ)[0]
+        return random.choice(bestAction)
+    ## if random number is less than or equal to epsilon, picks a random action
+    else:
+       return action_space.sample()
 
 
 def saveQ(q_table, save_path):
 
-    # TODO: Implement saving the Q values
+    np.savetxt(save_path, q_table, delimiter=",")
 
     return
 
 def loadQ(load_path):
 
-    # TODO: Implement loading the Q values
+    q_table = np.loadtxt(load_path, delimiter=",")
 
-    return
+    return q_table
 
 if __name__ == "__main__":
     main()
